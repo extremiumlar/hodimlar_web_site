@@ -2,8 +2,9 @@
  * Django backend uchun proxy.
  * `/django-api/<...>` orqali kelgan barcha so'rovlar Django'ga uzatiladi.
  *
- * Sabab: ngrok HTTPS'da yashayotgan frontend HTTP backend'ga to'g'ridan-to'g'ri
- * murojaat qila olmaydi (mixed content). Shuningdek, bu CORS muammosini ham hal qiladi.
+ * Sabab: brauzer to'g'ridan-to'g'ri backend'ga murojaat qilmaydi (CORS / mixed content).
+ * Next.js server o'rtada turib so'rovni Django'ga uzatadi - bu CORS muammosini hal qiladi
+ * va HTTPS (dev:https yoki production) bilan ham muammosiz ishlaydi.
  */
 import { NextRequest } from "next/server";
 
