@@ -43,16 +43,11 @@ class Shift(models.Model):
 
 
 class OfficeLocation(models.Model):
-    """Ofis joyi: GPS markazi + radius + ruxsat berilgan IP whitelist."""
+    """Ofis joyi: GPS markazi + radius."""
     name = models.CharField("Nomi", max_length=100)
     latitude = models.DecimalField("Kenglik", max_digits=9, decimal_places=6)
     longitude = models.DecimalField("Uzunlik", max_digits=9, decimal_places=6)
     radius_meters = models.PositiveIntegerField("Radius (m)", default=150)
-    allowed_ips = models.TextField(
-        "Ruxsat berilgan IP lar",
-        blank=True,
-        help_text="Har bir IP yangi qatorda. Bo'sh bo'lsa IP tekshirilmaydi.",
-    )
     is_active = models.BooleanField("Faol", default=True)
 
     class Meta:
@@ -61,9 +56,6 @@ class OfficeLocation(models.Model):
 
     def __str__(self) -> str:
         return self.name
-
-    def ip_whitelist(self) -> list[str]:
-        return [ip.strip() for ip in self.allowed_ips.splitlines() if ip.strip()]
 
 
 class User(AbstractUser):

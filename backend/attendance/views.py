@@ -10,7 +10,6 @@ from accounts.permissions import IsHRRole
 from .models import Attendance
 from .serializers import AttendanceSerializer, CheckInRequestSerializer
 from .services import perform_check_in, perform_check_out, CheckInError, CheckInPayload
-from .utils import get_client_ip
 
 
 class AttendanceViewSet(viewsets.ReadOnlyModelViewSet):
@@ -42,7 +41,6 @@ class AttendanceViewSet(viewsets.ReadOnlyModelViewSet):
                 CheckInPayload(
                     latitude=ser.validated_data["latitude"],
                     longitude=ser.validated_data["longitude"],
-                    ip=get_client_ip(request),
                 ),
             )
         except CheckInError as e:
@@ -63,7 +61,6 @@ class AttendanceViewSet(viewsets.ReadOnlyModelViewSet):
                 CheckInPayload(
                     latitude=ser.validated_data["latitude"],
                     longitude=ser.validated_data["longitude"],
-                    ip=get_client_ip(request),
                 ),
             )
         except CheckInError as e:

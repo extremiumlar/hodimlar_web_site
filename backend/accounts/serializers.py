@@ -19,7 +19,7 @@ class OfficeLocationSerializer(serializers.ModelSerializer):
         model = OfficeLocation
         fields = [
             "id", "name", "latitude", "longitude", "radius_meters",
-            "allowed_ips", "is_active",
+            "is_active",
         ]
 
 

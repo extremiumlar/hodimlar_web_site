@@ -108,7 +108,6 @@ export default function AdminPage() {
               <th className="text-left py-2">Hodim</th>
               <th className="text-left py-2">Kelgan</th>
               <th className="text-left py-2">Kechikish</th>
-              <th className="text-left py-2">IP</th>
             </tr>
           </thead>
           <tbody>
@@ -117,10 +116,9 @@ export default function AdminPage() {
                 <td className="py-2">{a.user_name}</td>
                 <td>{new Date(a.check_in_time).toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit" })}</td>
                 <td>{a.late_minutes > 0 ? <span className="text-rose-600">{a.late_minutes} daq</span> : "—"}</td>
-                <td className="text-slate-500">{a.check_in_ip}</td>
               </tr>
             ))}
-            {!live?.in_office?.length && <tr><td colSpan={4} className="py-4 text-center text-slate-400">Hozir ofisda hech kim yo'q.</td></tr>}
+            {!live?.in_office?.length && <tr><td colSpan={3} className="py-4 text-center text-slate-400">Hozir ofisda hech kim yo'q.</td></tr>}
           </tbody>
         </table>
       </div>

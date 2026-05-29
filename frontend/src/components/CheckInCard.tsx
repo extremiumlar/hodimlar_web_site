@@ -109,7 +109,7 @@ export default function CheckInCard() {
 
       <div className="mt-4 text-xs text-slate-500 flex items-center gap-2">
         <span>📍</span>
-        <span>GPS + ofis Wi-Fi tekshiriladi. Ofis hududidan tashqari yoki boshqa tarmoqdan check-in qabul qilinmaydi.</span>
+        <span>GPS tekshiriladi. Ofis hududidan tashqarida bo'lsangiz check-in qabul qilinmaydi.</span>
       </div>
     </div>
   );

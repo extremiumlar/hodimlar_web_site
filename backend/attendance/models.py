@@ -27,13 +27,11 @@ class Attendance(models.Model):
     check_in_time = models.DateTimeField("Kelgan vaqti", null=True, blank=True)
     check_in_lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     check_in_lng = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    check_in_ip = models.GenericIPAddressField(null=True, blank=True)
     check_in_distance_m = models.PositiveIntegerField(null=True, blank=True)
 
     check_out_time = models.DateTimeField("Ketgan vaqti", null=True, blank=True)
     check_out_lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     check_out_lng = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    check_out_ip = models.GenericIPAddressField(null=True, blank=True)
 
     late_minutes = models.PositiveIntegerField("Kechikish (daq)", default=0)
     early_leave_minutes = models.PositiveIntegerField("Erta ketish (daq)", default=0)

@@ -11,8 +11,8 @@ class AttendanceSerializer(serializers.ModelSerializer):
         fields = [
             "id", "user", "user_name", "date",
             "check_in_time", "check_in_lat", "check_in_lng",
-            "check_in_ip", "check_in_distance_m",
-            "check_out_time", "check_out_lat", "check_out_lng", "check_out_ip",
+            "check_in_distance_m",
+            "check_out_time", "check_out_lat", "check_out_lng",
             "late_minutes", "early_leave_minutes", "worked_minutes",
             "status", "status_display", "is_weekend", "note",
             "created_at", "updated_at",

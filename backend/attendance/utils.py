@@ -15,13 +15,6 @@ def haversine_distance(lat1: float, lng1: float, lat2: float, lng2: float) -> fl
     return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
 
-def get_client_ip(request) -> str | None:
-    xff = request.META.get("HTTP_X_FORWARDED_FOR", "")
-    if xff:
-        return xff.split(",")[0].strip()
-    return request.META.get("REMOTE_ADDR")
-
-
 def is_weekend(d: date_cls, work_day_set: set[int]) -> bool:
     """ISO weekday: 1=Du..7=Ya. work_day_set ichida bo'lmasa - dam olish."""
     return d.isoweekday() not in work_day_set

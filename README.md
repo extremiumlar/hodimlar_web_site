@@ -8,9 +8,9 @@ Hodimlar boshqaruvi tizimi — **Django REST** + **Next.js** + **Tailwind** asos
 
 ## Imkoniyatlar
 
-✅ **GPS + Wi-Fi (IP) tekshiruvi** bilan check-in / check-out
+✅ **GPS tekshiruvi** bilan check-in / check-out
    – tashqarida bo'lsa "Avval ofisga keling" xabari
-   – faqat ofis Wi-Fi'sidan ruxsat
+   – ofis radiusi ichida bo'lsa qabul qilinadi
 
 ✅ **Smenalar** (ish kunlari + grace daqiqalar) — har bir hodim uchun alohida
 
@@ -38,8 +38,6 @@ Hodimlar boshqaruvi tizimi — **Django REST** + **Next.js** + **Tailwind** asos
 
 ✅ **Eksport**: Excel (davomat, oylik) va PDF (payslip)
 
-✅ **IP cheklash**: ofis Wi-Fi'sining IP whitelisti
-
 ✅ **Audit log**: barcha POST/PUT/PATCH/DELETE so'rovlar saqlanadi
 
 ---
@@ -51,9 +49,9 @@ hodim_crm/
 ├── backend/                       # Django REST API
 │   ├── config/                    # Django settings, urls
 │   ├── accounts/                  # User, Department, Shift, OfficeLocation
-│   ├── attendance/                # Keldim/Ketdim, GPS+IP, kechikish
+│   ├── attendance/                # Keldim/Ketdim, GPS, kechikish
 │   │   ├── services.py            # check-in logikasi
-│   │   └── utils.py               # haversine, IP
+│   │   └── utils.py               # haversine, vaqt hisoblash
 │   ├── tasks/                     # Vazifa + isbot fayl
 │   ├── payroll/                   # Bonus, Penalty, MonthlyPayroll
 │   │   └── services.py            # avtomatik hisoblash
@@ -113,7 +111,7 @@ python manage.py runserver
 **Seed orqali yaratiladi:**
 - `admin` / `admin123` — superuser/admin
 - `hodim` / `hodim123` — test hodim
-- Ofis: Toshkent (41.311, 69.240, radius 200m), `127.0.0.1` IP whitelistda
+- Ofis: Toshkent (41.311, 69.240, radius 200m)
 - Smena: 09:00–18:00, Du–Ju
 
 ### 2. Frontend
@@ -204,4 +202,4 @@ python manage.py check_absent --threshold 09:30
 - Production'da `.env` ichidagi `DJANGO_SECRET_KEY` ni o'zgartiring.
 - `DJANGO_DEBUG=False` qiling.
 - HTTPS orqali ishga tushiring (geolokatsiya HTTPS talab qiladi production'da).
-- `OfficeLocation.allowed_ips` ga real ofis IP'larini yozing.
+- `OfficeLocation` ning `latitude/longitude/radius` ni real ofisga moslang.

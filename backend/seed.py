@@ -33,7 +33,6 @@ office, _ = OfficeLocation.objects.get_or_create(
         "latitude": Decimal("41.311081"),
         "longitude": Decimal("69.240562"),
         "radius_meters": 200,
-        "allowed_ips": "127.0.0.1\n::1",  # localhost test uchun
         "is_active": True,
     },
 )

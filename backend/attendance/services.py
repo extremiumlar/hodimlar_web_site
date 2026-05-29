@@ -1,7 +1,7 @@
-"""Check-in / Check-out logikasi (GPS + IP tekshiruvi).
+"""Check-in / Check-out logikasi (faqat GPS tekshiruvi).
 
 Hisoblash (kechikish, ishlangan vaqt) `Attendance.save()` ichida avtomatik
-bajariladi — bu yerda faqat tekshiruv va vaqtlarni yozish.
+bajariladi — bu yerda faqat GPS tekshiruvi va vaqtlarni yozish.
 """
 from __future__ import annotations
 
@@ -21,7 +21,6 @@ class CheckInError(Exception):
 class CheckInPayload:
     latitude: float
     longitude: float
-    ip: str | None
 
 
 def _validate_office(user, payload: CheckInPayload) -> int:
@@ -38,14 +37,6 @@ def _validate_office(user, payload: CheckInPayload) -> int:
             f"Siz ofis hududidan tashqaridasiz ({int(distance)} m). "
             f"Avval ofisga keling."
         )
-
-    whitelist = office.ip_whitelist()
-    if whitelist:
-        if not payload.ip or payload.ip not in whitelist:
-            raise CheckInError(
-                "Faqat ofis Wi-Fi'sidan check-in qilish mumkin. "
-                "Ofis tarmog'iga ulaning."
-            )
     return int(distance)
 
 
@@ -66,7 +57,6 @@ def perform_check_in(user, payload: CheckInPayload) -> Attendance:
     att.check_in_time = now
     att.check_in_lat = Decimal(str(payload.latitude))
     att.check_in_lng = Decimal(str(payload.longitude))
-    att.check_in_ip = payload.ip
     att.check_in_distance_m = distance
     att.save()  # ← bu yerda recalculate() avtomatik chaqiriladi
     return att
@@ -88,6 +78,5 @@ def perform_check_out(user, payload: CheckInPayload) -> Attendance:
     att.check_out_time = now
     att.check_out_lat = Decimal(str(payload.latitude))
     att.check_out_lng = Decimal(str(payload.longitude))
-    att.check_out_ip = payload.ip
     att.save()  # ← recalculate() worked_minutes, early_leave_minutes ni yangilaydi
     return att
