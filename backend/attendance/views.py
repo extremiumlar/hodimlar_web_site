@@ -138,3 +138,108 @@ class AttendanceViewSet(viewsets.ReadOnlyModelViewSet):
             "late_top": list(late_top),
             "worked_top": list(worked_top),
         })
+
+    @action(detail=False, methods=["get"], url_path="dashboard",
+            permission_classes=[permissions.IsAuthenticated, IsHRRole])
+    def dashboard(self, request):
+        """Boshliq paneli uchun to'liq ma'lumot (bitta so'rovda)."""
+        today = timezone.localdate()
+        month_start = today.replace(day=1)
+
+        active_users = User.objects.filter(is_active=True)
+        total_employees = active_users.count()
+        on_leave = active_users.filter(is_on_leave=True).count()
+
+        today_qs = Attendance.objects.filter(date=today)
+        present_now = today_qs.filter(
+            check_in_time__isnull=False, check_out_time__isnull=True).count()
+        checked_in_today = today_qs.filter(check_in_time__isnull=False).count()
+        late_today = today_qs.filter(status="late").count()
+        left_today = today_qs.filter(check_out_time__isnull=False).count()
+
+        # Kelmaganlar (bugun, dam olish kunida bo'lmaganlar)
+        not_checked_in = active_users.filter(is_on_leave=False).exclude(
+            attendances__date=today, attendances__check_in_time__isnull=False,
+        ).count()
+
+        # Davomat foizi (oy boshidan)
+        month_qs = Attendance.objects.filter(date__gte=month_start, date__lte=today)
+        month_present = month_qs.filter(check_in_time__isnull=False).count()
+        month_late_min = month_qs.aggregate(s=Sum("late_minutes"))["s"] or 0
+        month_worked_min = month_qs.aggregate(s=Sum("worked_minutes"))["s"] or 0
+
+        # So'nggi harakatlar (oxirgi 15 check-in/out)
+        recent = (
+            Attendance.objects.filter(date=today, check_in_time__isnull=False)
+            .select_related("user", "user__department")
+            .order_by("-check_in_time")[:15]
+        )
+        recent_data = [{
+            "id": a.id,
+            "user_name": a.user.get_full_name() or a.user.username,
+            "department": a.user.department.name if a.user.department else "",
+            "check_in_time": a.check_in_time,
+            "check_out_time": a.check_out_time,
+            "late_minutes": a.late_minutes,
+            "status": a.status,
+            "status_display": a.get_status_display(),
+        } for a in recent]
+
+        # Hozir ofisda
+        in_office = (
+            Attendance.objects.filter(
+                date=today, check_in_time__isnull=False, check_out_time__isnull=True)
+            .select_related("user", "user__department")
+            .order_by("check_in_time")
+        )
+        in_office_data = [{
+            "id": a.id,
+            "user_name": a.user.get_full_name() or a.user.username,
+            "department": a.user.department.name if a.user.department else "",
+            "check_in_time": a.check_in_time,
+            "late_minutes": a.late_minutes,
+        } for a in in_office]
+
+        return Response({
+            "today": today.isoformat(),
+            "summary": {
+                "total_employees": total_employees,
+                "present_now": present_now,
+                "checked_in_today": checked_in_today,
+                "late_today": late_today,
+                "left_today": left_today,
+                "not_checked_in": not_checked_in,
+                "on_leave": on_leave,
+                "attendance_rate": round(
+                    100 * month_present / (total_employees * max(1, today.day))
+                    if total_employees else 0, 1),
+                "month_late_minutes": month_late_min,
+                "month_worked_hours": round(month_worked_min / 60, 1),
+            },
+            "in_office": in_office_data,
+            "recent": recent_data,
+        })
+
+    @action(detail=False, methods=["get"], url_path="employee-summary",
+            permission_classes=[permissions.IsAuthenticated, IsHRRole])
+    def employee_summary(self, request):
+        """Har bir hodimning davr bo'yicha umumiy statistikasi (jadval uchun)."""
+        days = int(request.query_params.get("days", 30))
+        since = timezone.localdate() - timedelta(days=days)
+
+        rows = (
+            Attendance.objects.filter(date__gte=since)
+            .values(
+                "user__id", "user__first_name", "user__last_name",
+                "user__username", "user__department__name",
+            )
+            .annotate(
+                present_days=Count("id", filter=Q(check_in_time__isnull=False)),
+                late_count=Count("id", filter=Q(status="late")),
+                late_minutes=Sum("late_minutes"),
+                early_minutes=Sum("early_leave_minutes"),
+                worked_minutes=Sum("worked_minutes"),
+            )
+            .order_by("-late_minutes")
+        )
+        return Response(list(rows))
